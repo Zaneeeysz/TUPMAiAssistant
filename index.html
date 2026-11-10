@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TUPM AI Assistant &middot; Research Suite | Technological University of the Philippines Manila</title>
+  <meta name="description" content="AI Chatbot and Academic Advisor for Technological University of the Philippines Manila. Evaluates students' trust comparing Plain AI vs Source-Supported citation conditions based on the TUP Student Handbook and TUP Manila USG updates.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- VIEWPORT WRAPPER (Permits Desktop, Mobile Preview Frame, or Tablet Frame) -->
+  <div id="app-viewport-wrapper" class="app-viewport-wrapper mode-desktop">
+    <div class="site-main-shell">
+
+      <!-- TOP SYSTEM CONTROL BAR (Research Controls & Viewport Modes) -->
+      <aside class="system-top-strip" aria-label="Experimental Controls Bar">
+        <div class="system-strip-left">
+          <span class="system-badge badge-irb">PROTOCOL #2025-AI-084</span>
+          <span class="system-badge" style="background-color: #064E3B; color: #A7F3D0;">
+            <span class="badge-active-dot"></span>
+            IRB APPROVED • ACTIVE SESSION
+          </span>
+          <span style="font-size: 0.75rem; color: #9CA3AF;">A.Y. 2026-2027 • Milestone 3 HCI</span>
+        </div>
+
+        <div class="system-strip-right">
+          <!-- Condition Switcher (Control vs Treatment) -->
+          <div class="condition-toggle-container" title="Switch between Plain AI (Control) and Source-Supported (Treatment) conditions">
+            <span style="font-size: 0.7rem; color: #9CA3AF; margin-right: 6px; font-weight: 700;">CONDITION:</span>
+            <button class="condition-btn" data-condition="condition-a" id="btn-cond-a">
+              <span>(A) Plain Answer</span>
+            </button>
+            <button class="condition-btn active" data-condition="condition-b" id="btn-cond-b">
+              <span>(B) Source-Supported</span>
+            </button>
+          </div>
+
+          <!-- Viewport Mode Switcher (Desktop vs Mobile Frame) -->
+          <div class="viewport-btn-group" title="Toggle device presentation for mobile and desktop testing">
+            <button class="viewport-btn active" data-viewport="desktop" title="Full Responsive Desktop">🖥️ Desktop</button>
+            <button class="viewport-btn" data-viewport="mobile-frame" title="Mobile Device Frame Preview (Page 4-6)">📱 Mobile Frame</button>
+            <button class="viewport-btn" data-viewport="tablet-frame" title="Tablet Preview">📟 Tablet</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- PRIMARY INSTITUTIONAL HEADER (Reference Page 7 Desktop & Page 4 Mobile) -->
+      <header class="institutional-header" role="banner">
+        <div class="header-container">
+          
+          <!-- Brand & Seals -->
+          <div class="brand-section">
+            <div class="institution-logos">
+              <!-- TUP Official Seal SVG -->
+              <div class="logo-circle tup-seal" title="Technological University of the Philippines">
+                <svg viewBox="0 0 100 100" width="36" height="36" aria-label="TUP Seal">
+                  <circle cx="50" cy="50" r="46" fill="#7B1113" stroke="#D97706" stroke-width="3"/>
+                  <!-- Gear teeth ring -->
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#FBBF24" stroke-width="2" stroke-dasharray="6 3"/>
+                  <!-- Torch of knowledge -->
+                  <path d="M48 24 L52 24 L53 54 L47 54 Z" fill="#FBBF24"/>
+                  <!-- Flame -->
+                  <path d="M50 16 Q54 22 50 25 Q46 22 50 16 Z" fill="#EF4444"/>
+                  <!-- Open book -->
+                  <path d="M35 60 Q50 56 50 66 Q50 56 65 60 L63 74 Q50 70 50 78 Q50 70 37 74 Z" fill="#FFFFFF"/>
+                  <!-- 1901 Founding year -->
+                  <text x="50" y="88" font-size="8" fill="#FDE68A" font-weight="bold" text-anchor="middle" font-family="sans-serif">1901</text>
+                </svg>
+              </div>
+
+              <!-- College of Science (COS) Emblem SVG -->
+              <div class="logo-circle cos-seal" title="College of Science - Computer Studies Department">
+                <svg viewBox="0 0 100 100" width="36" height="36" aria-label="COS Seal">
+                  <circle cx="50" cy="50" r="46" fill="#FDFCFB" stroke="#D97706" stroke-width="3"/>
+                  <!-- Atom / Science orbits -->
+                  <ellipse cx="50" cy="50" rx="34" ry="14" fill="none" stroke="#D97706" stroke-width="2" transform="rotate(30 50 50)"/>
+                  <ellipse cx="50" cy="50" rx="34" ry="14" fill="none" stroke="#7B1113" stroke-width="2" transform="rotate(-30 50 50)"/>
+                  <!-- Center Core -->
+                  <circle cx="50" cy="50" r="8" fill="#7B1113"/>
+                  <text x="50" y="86" font-size="7.5" fill="#7B1113" font-weight="bold" text-anchor="middle" font-family="sans-serif">COS • BSIS</text>
+                </svg>
+              </div>
+            </div>
+
+            <div class="brand-text-block">
+              <div class="brand-title-row">
+                <span class="brand-title">TUPM AI Assistant</span>
+                <span class="brand-subtitle-tag" id="condition-badge-text">Condition B (Treatment Group)</span>
+              </div>
+              <span class="brand-affiliation">College of Science • Computer Studies Department • Manila</span>
+            </div>
+          </div>
+
+          <!-- Main Navigation Bar -->
+          <nav class="header-nav" aria-label="Study Suite Navigation">
+            <button class="nav-tab-btn active" data-screen="overview">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span>Overview</span>
+            </button>
+            <button class="nav-tab-btn" data-screen="chat">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>Chat Assistant</span>
+            </button>
+            <button class="nav-tab-btn" data-screen="survey">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <span>Evaluation Survey</span>
+            </button>
+            <button class="nav-tab-btn" data-screen="sources" onclick="window.openSourceModal('handbook-acad-code')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Source Verification</span>
+            </button>
+          </nav>
+
+          <!-- Participant & Student ID Metadata -->
+          <div class="header-meta-group">
+            <div class="student-card-pill" title="Credentialed Study Participant">
+              <div class="student-avatar-icon">P</div>
+              <div class="student-info-text">
+                <span class="student-label">Student ID</span>
+                <span class="student-id-code">TUPM-25-1399</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT CONTAINER -->
+      <main class="site-content-area" role="main">
+
+        <!-- ==========================================================================
+             SCREEN 1: WELCOME / HOME SCREEN (Overview - Reference Page 7 Desktop)
+             ========================================================================== -->
+        <section id="screen-overview" class="screen-view active-screen" aria-labelledby="overview-heading">
+          
+          <!-- Top Banner Card -->
+          <div class="overview-top-banner">
+            <div class="banner-left">
+              <div class="protocol-tag-row">
+                <span class="pill-red">IRB #2025-AI-084 Approved</span>
+                <span class="pill-gray">Div. of Academic Affairs &amp; HCI Laboratory</span>
+                <span class="pill-green">● Study Session Active</span>
+              </div>
+              <h1 class="banner-title" id="overview-heading">TUPM AI Assistant</h1>
+              <p class="banner-desc">
+                Welcome, TUPian. You will interact with our next-generation automated university advisor to evaluate its accuracy, communicative nuance, and institutional fidelity across routine academic, financial, and course-planning situations.
+              </p>
+            </div>
+
+            <div class="banner-right-card">
+              <div class="metric-header-row">
+                <span class="metric-label">Protocol Allocation</span>
+                <span class="metric-badge-cohort">Cohort A-24</span>
+              </div>
+              <div class="metric-time">⏱️ 18-22 Mins</div>
+              <div class="metric-sub">3 Structured Modules • Real-Time Logged</div>
+              <div style="margin-top: 10px; font-size: 0.72rem; color: #059669; font-weight: 700;">
+                ✓ Ready for Step 1
+              </div>
+            </div>
+          </div>
+
+          <!-- Three-Stage Study Roadmap -->
+          <div class="roadmap-section">
+            <div class="section-eyebrow">Sequential Procedure</div>
+            <div class="section-heading-row">
+              <h2 class="section-title">Three-Stage Study Roadmap</h2>
+              <span class="section-subtext">Standard Institutional Trial Flow</span>
+            </div>
+
+            <div class="roadmap-grid">
+              <!-- Step 1 -->
+              <div class="roadmap-card">
+                <div class="roadmap-step-header">
+                  <span class="step-num-pill">1</span>
+                  <span class="step-tag">Immediate Next</span>
+                </div>
+                <h3 class="roadmap-card-title">Task Briefing &amp; Case Review</h3>
+                <p class="roadmap-card-text">
+                  Examine official university regulations regarding course drops, census cutoffs, and transcript notations for Case ACAD-01.
+                </p>
+                <div class="roadmap-footer">
+                  <span>Case: ACAD-01</span>
+                  <span>~4 mins</span>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="roadmap-card">
+                <div class="roadmap-step-header">
+                  <span class="step-num-pill">2</span>
+                  <span class="step-tag">Module 2</span>
+                </div>
+                <h3 class="roadmap-card-title">Interactive Advisory</h3>
+                <p class="roadmap-card-text">
+                  Conduct live queries with the TUPM AI model. Probe edge cases, grade appeals, and procedural deadlines in real time.
+                </p>
+                <div class="roadmap-footer">
+                  <span>Autonomous Bot v2.4</span>
+                  <span>~12 mins</span>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="roadmap-card">
+                <div class="roadmap-step-header">
+                  <span class="step-num-pill">3</span>
+                  <span class="step-tag">Module 3</span>
+                </div>
+                <h3 class="roadmap-card-title">Psychometric Trust Survey</h3>
+                <p class="roadmap-card-text">
+                  Complete the standardized 4-dimension Likert instrument (TAAS-4) assessing perceived competence, procedural alignment, and usability.
+                </p>
+                <div class="roadmap-footer">
+                  <span>Likert 1-5 Instrument</span>
+                  <span>~4 mins</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Two-Column Section: Case Simulation vs Participant Checklist -->
+          <div class="study-details-layout">
+            
+            <!-- Left: Primary Simulation Baseline (Case ACAD-01) -->
+            <div class="case-card">
+              <div class="case-card-header">
+                <span class="case-code-badge">PRIMARY SIMULATION BASELINE</span>
+                <span style="font-size: 0.75rem; color: #64748B;">Mid-Census Evaluation</span>
+              </div>
+              <h3 class="case-title">Case ACAD-01: Add/Drop &amp; Grade Exclusion Window</h3>
+
+              <div class="case-scenario-box">
+                <div class="box-label">Scenario Premise</div>
+                <p class="box-content">
+                  A 3rd-year matriculated student in the College of Science seeks to drop <strong>BIOL 204 (General Biology)</strong> during Week 9. The standard add/drop deadline passed in Week 3, and the formal course withdrawal with standard "W" expired in Week 8. The participant must evaluate whether the AI Advisor accurately directs the student to the Dean's Extenuating Circumstances Petition rather than providing false authorization.
+                </p>
+              </div>
+
+              <div style="font-size: 0.78rem; font-weight: 800; color: #1E293B; margin-bottom: 8px;">
+                Benchmark Source Citations &amp; Grounding References
+              </div>
+              <div class="benchmark-sources-grid">
+                <div class="source-item-mini">
+                  <h5>Title 4 Academic Code §12.3</h5>
+                  <p>"Late withdrawals beyond the penultimate drop mark mandate verified medical or familial distress endorsed by the Academic Standing Board."</p>
+                  <span class="source-code-tag">TUPM Statutes 2024–2026</span>
+                </div>
+
+                <div class="source-item-mini">
+                  <h5>Registrar Manual 2024–2025 §7</h5>
+                  <p>"Grade Exclusion Policies apply exclusively during pre-census registration unless an exception is lodged under Section 7.4.B."</p>
+                  <span class="source-code-tag">Institutional Benchmark</span>
+                </div>
+
+                <div class="source-item-mini">
+                  <h5>TUP Manila USG Resolution 23-F</h5>
+                  <p>"Official appeals window and grace period coordination between STRAW Committee and College Deans."</p>
+                  <span class="source-code-tag">USG Advisory Bulletin</span>
+                </div>
+              </div>
+
+              <div class="evaluation-objective-callout">
+                <strong>⚠️ Core Evaluation Objective:</strong> Observe whether the AI Advisor avoids "hallucinatory approval" and correctly identifies the student's need for Form PET-SC (Dean of Student Affairs Exemption). Note all policy cross-references.
+              </div>
+
+              <!-- Data Retention & Privacy Disclaimer -->
+              <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px 16px; border-radius: 8px; font-size: 0.78rem; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                <span>🔒 <strong>Data Retention &amp; FERPA Protocol:</strong> Session logs are de-identified under NIST 800-88 cryptographic sanitization standards.</span>
+                <a href="https://tup.edu.ph/pages/students/tup-student-handbook" target="_blank" style="color: #7B1113; font-weight: 700; text-decoration: none;">View Handbook ↗</a>
+              </div>
+            </div>
+
+            <!-- Right: Participant Checklist & Controls -->
+            <div class="sidebar-panel-group">
+              <div class="checklist-card">
+                <div class="checklist-header">
+                  <h4>Participant Checklist</h4>
+                  <span class="checklist-progress-text">4 of 4 Ready</span>
+                </div>
+                <ul class="checklist-items">
+                  <li class="checklist-item">
+                    <span class="check-box-icon">✓</span>
+                    <div>
+                      <strong>Informed Consent Form #A-48</strong>
+                      <div style="font-size: 0.7rem; color: #64748B;">Electronically authenticated</div>
+                    </div>
+                  </li>
+                  <li class="checklist-item">
+                    <span class="check-box-icon">✓</span>
+                    <div>
+                      <strong>Audio/Visual Environment Check</strong>
+                      <div style="font-size: 0.7rem; color: #64748B;">Standard terminal calibrated</div>
+                    </div>
+                  </li>
+                  <li class="checklist-item">
+                    <span class="check-box-icon">✓</span>
+                    <div>
+                      <strong>Review Scenario ACAD-01</strong>
+                      <div style="font-size: 0.7rem; color: #64748B;">Required prior to session start</div>
+                    </div>
+                  </li>
+                  <li class="checklist-item">
+                    <span class="check-box-icon">✓</span>
+                    <div>
+                      <strong>Academic Integrity Agreement</strong>
+                      <div style="font-size: 0.7rem; color: #64748B;">Accept objective reporting code</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="controls-card">
+                <h4>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+                  Experimental Controls
+                </h4>
+                <div class="param-list">
+                  <div class="param-row">
+                    <span class="param-name">Model Parameter Set:</span>
+                    <span class="param-val">Gemini-TUP Grounded</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-name">Temperature:</span>
+                    <span class="param-val">0.15 (Strict Determinism)</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-name">Retrieval Reranker:</span>
+                    <span class="param-val">Cohere-v3-Scholarly</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-name">Grounding Corpus:</span>
+                    <span class="param-val">Academic Code 2024-2026</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Action Footer Bar -->
+          <div class="overview-action-bar">
+            <div class="cta-left">
+              <div class="cta-icon-box">🚀</div>
+              <div class="cta-text">
+                <h4>Ready to start the evaluation?</h4>
+                <p>Your session timer and interaction logs will initiate once you proceed to the interactive advisor screen.</p>
+              </div>
+            </div>
+            <div class="cta-btn-group">
+              <button class="btn-secondary" onclick="window.openSourceModal('handbook-acad-code')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Review Consent &amp; Sources
+              </button>
+              <button class="btn-maroon-primary" onclick="window.switchScreen('chat')">
+                <span>Begin Study Session</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==========================================================================
+             SCREENS 2 & 3: CHAT ASSISTANT (Dual Condition: Plain vs Source-Supported)
+             (Reference Page 8 Control & Page 9 Treatment Desktop, Page 4 & 5 Mobile)
+             ========================================================================== -->
+        <section id="screen-chat" class="screen-view" aria-labelledby="chat-heading">
+          <h2 id="chat-heading" class="sr-only">Interactive AI Chatbot</h2>
+
+          <div class="chat-layout-grid">
+            
+            <!-- Main Chat Column -->
+            <div class="chat-main-card">
+              
+              <!-- Chat Sub-Header with telemetry -->
+              <div class="chat-sub-header">
+                <div class="chat-bot-identity">
+                  <div class="bot-avatar-badge" title="TUPM AI Assistant">AI</div>
+                  <div class="bot-name-group">
+                    <div class="bot-title-line">
+                      <span>Academic AI Bot</span>
+                      <span class="telemetry-chip highlight" style="font-size: 0.65rem;">✓ Verified</span>
+                    </div>
+                    <span class="bot-status-tag">Office of Academic Records &amp; Policy • Grounded v2.4-S</span>
+                  </div>
+                </div>
+
+                <div class="chat-header-telemetry">
+                  <span class="telemetry-chip highlight">● 99.4% Confidence</span>
+                  <span class="telemetry-chip" id="metric-latency-display">Latency: 412ms</span>
+                  <span class="telemetry-chip" style="background-color: var(--tup-maroon-tint); color: var(--tup-maroon-primary); font-weight: 700;">
+                    Strict Verification Active
+                  </span>
+                </div>
+              </div>
+
+              <!-- Quick Inquiry Suggested Chips Carousel -->
+              <div class="quick-inquiries-bar" aria-label="Suggested Student Inquiries">
+                <button class="query-chip-pill" data-query="How do 1st year incoming freshmen enroll and what physical documents must be submitted to the TUP Office of Admissions - Manila?">
+                  📝 1st Year Freshmen Enrollment (Admissions)
+                </button>
+                <button class="query-chip-pill" data-query="How do 2nd year and higher continuing students enroll? Do we send rating slips to our department head and wait for the Certificate of Registration (COR)?">
+                  📑 2nd Year &amp; Up Enrollment (Rating Slips &amp; Dept Head)
+                </button>
+                <button class="query-chip-pill" data-query="Can I still drop my BIOL 204 lab course without a 'W' grade, and will I receive a tuition refund?">
+                  💧 Drop Course &amp; Tuition Refund
+                </button>
+                <button class="query-chip-pill" data-query="What is the official TUP grading scale and policy on INC (Incomplete) removal?">
+                  📊 Grading Scale &amp; INC Rules
+                </button>
+                <button class="query-chip-pill" data-query="What is the dress code on wash days and prescribed uniform rules?">
+                  👔 Uniform &amp; Wash Day Attire
+                </button>
+                <button class="query-chip-pill" data-query="What are the requirements to graduate with Latin Honors (Cum Laude, Magna, Summa)?">
+                  🎓 Latin Honors Criteria
+                </button>
+                <button class="query-chip-pill" data-query="What are the latest announcements from TUP Manila USG and how do I report a grievance to STRAW?">
+                  📢 USG Updates &amp; STRAW Desk
+                </button>
+                <button class="query-chip-pill" data-query="Where can I request my Official Transcript of Records (TOR) and clearances?">
+                  📄 Request TOR &amp; Clearance
+                </button>
+              </div>
+
+              <!-- Chat Messages Stream (Populated dynamically by app.js) -->
+              <div class="chat-messages-stream" id="chat-messages-stream">
+                <!-- Messages will be rendered here -->
+              </div>
+
+              <!-- Chat Input Box -->
+              <div class="chat-input-container">
+                <form class="chat-input-form" id="chat-input-form">
+                  <button type="button" class="chat-action-btn" title="Inspect Corpus Evidence" onclick="window.openSourceModal('handbook-acad-code')">
+                    📎
+                  </button>
+                  <textarea 
+                    class="chat-textarea" 
+                    id="chat-textarea" 
+                    placeholder="Ask follow-up question regarding your course drop, lab policies, refunds, or handbook rules..."
+                    rows="1"
+                    aria-label="Ask a question to TUPM AI Assistant"
+                  ></textarea>
+                  <button type="submit" class="btn-send-chat" id="btn-send-chat" title="Send Question">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  </button>
+                </form>
+
+                <div class="chat-input-subtext">
+                  <span>Grounded on TUP Student Handbook &amp; TUP Manila USG Live Advisories</span>
+                  <span>Press <strong>Enter ↵</strong> to send, <strong>Shift+Enter</strong> for newline</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Desktop Sidebar (Experimental Workflow & Term Deadlines) -->
+            <aside class="chat-desktop-sidebar" aria-label="Experimental Sidebar">
+              
+              <!-- Workflow Progress Card -->
+              <div class="sidebar-widget-card">
+                <div class="widget-title-row">
+                  <span class="widget-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    Experimental Workflow
+                  </span>
+                  <span class="widget-badge">50% Completed</span>
+                </div>
+
+                <div class="workflow-task-list">
+                  <div class="workflow-task-item active">
+                    <span class="task-step-digit">1</span>
+                    <div class="task-desc-col">
+                      <h6>Task 1: Course Drop</h6>
+                      <p>Active Arm: Review assistant output &amp; record perceived trust metrics.</p>
+                    </div>
+                  </div>
+
+                  <div class="workflow-task-item">
+                    <span class="task-step-digit" style="background-color: #94A3B8;">2</span>
+                    <div class="task-desc-col">
+                      <h6>Task 2: Degree Audit</h6>
+                      <p>Experimental Arm: Verified inline citation corpus with handbook anchor cross-referencing.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fall Term Deadlines Card -->
+              <div class="sidebar-widget-card">
+                <div class="widget-title-row">
+                  <span class="widget-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Fall Term Deadlines
+                  </span>
+                  <span class="widget-badge">AY 2024–2026</span>
+                </div>
+
+                <div class="deadline-items-list">
+                  <div class="deadline-row">
+                    <div class="calendar-date-badge">
+                      <span class="cal-month">SEP</span>
+                      <span class="cal-day">12</span>
+                    </div>
+                    <div class="deadline-text">
+                      <h6>Week 2 Drop Deadline</h6>
+                      <p>100% tuition refund window closes at 11:59 PM EST.</p>
+                    </div>
+                  </div>
+
+                  <div class="deadline-row">
+                    <div class="calendar-date-badge" style="background-color: #991B1B;">
+                      <span class="cal-month">OCT</span>
+                      <span class="cal-day">24</span>
+                    </div>
+                    <div class="deadline-text">
+                      <h6>Fall Census Date ●</h6>
+                      <p>Last day to drop without a "W" record. 50% bursar fee credit applies.</p>
+                    </div>
+                  </div>
+
+                  <div class="deadline-row">
+                    <div class="calendar-date-badge" style="background-color: #475569;">
+                      <span class="cal-month">NOV</span>
+                      <span class="cal-day">28</span>
+                    </div>
+                    <div class="deadline-text">
+                      <h6>Late Withdrawal Cap</h6>
+                      <p>Final day to petition for "W" status. 0% refund applies.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="margin-top: 10px; font-size: 0.7rem; color: #64748B; border-top: 1px solid #E2E8F0; padding-top: 8px;">
+                  Reference: Registrar Bulletin Art. 4 §2
+                </div>
+              </div>
+
+              <!-- Protocol Parameters Card -->
+              <div class="sidebar-widget-card">
+                <div class="widget-title-row">
+                  <span class="widget-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Protocol Parameters
+                  </span>
+                </div>
+
+                <div class="param-list">
+                  <div class="param-row">
+                    <span class="param-name">Condition Arm:</span>
+                    <span class="param-val" id="condition-arm-label">Treatment (B)</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-name">Citation Layer:</span>
+                    <span class="param-val" id="citation-layer-status" style="color: #059669;">Verified RAG Active</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-name">Corpus Baseline:</span>
+                    <span class="param-val">TUP Academic 2024</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-name">Anonymity Tier:</span>
+                    <span class="param-val">IRB Tier-1 Blind</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Retrieval Pipeline Metrics Card (Source Condition) -->
+              <div class="sidebar-widget-card">
+                <div class="widget-title-row">
+                  <span class="widget-title">Retrieval Pipeline Metrics</span>
+                  <span class="widget-badge">Top_p: 0.95 • k=3</span>
+                </div>
+
+                <div class="retrieval-metrics-grid">
+                  <div class="metric-stat-box">
+                    <span class="stat-val">100%</span>
+                    <span class="stat-lbl">Sourced</span>
+                  </div>
+                  <div class="metric-stat-box">
+                    <span class="stat-val" style="color: #059669;">0</span>
+                    <span class="stat-lbl">Hallucinations</span>
+                  </div>
+                  <div class="metric-stat-box">
+                    <span class="stat-val">3 Docs</span>
+                    <span class="stat-lbl">Parsed RAG</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Human Advisor Fallback Card -->
+              <div class="human-advisor-card">
+                <span class="advisor-icon">💡</span>
+                <div class="advisor-text">
+                  <h6>Need Human Advisor Confirmation?</h6>
+                  <p>Live drop-in advising available today until 4:00 PM at College of Science (COS) Dean's Office / Hall of Sciences Rm 210.</p>
+                </div>
+              </div>
+
+            </aside>
+
+          </div>
+
+        </section>
+
+        <!-- ==========================================================================
+             SCREEN 5: TRUST & AUTOMATION RATING SCALE (TAAS-4)
+             (Reference Page 6 Mobile & Page 11 Desktop)
+             ========================================================================== -->
+        <section id="screen-survey" class="screen-view" aria-labelledby="survey-heading">
+          
+          <div class="survey-layout-grid">
+            
+            <!-- Left Survey Context Sidebar -->
+            <div class="survey-info-sidebar">
+              
+              <div class="survey-protocol-card">
+                <div style="font-size: 0.7rem; font-family: var(--font-mono); color: #7B1113; font-weight: 700; margin-bottom: 4px;">
+                  PHASE 2 OF 3 • MANDATORY RESEARCH PROTOCOL
+                </div>
+                <h3 id="survey-heading" style="font-size: 1.15rem; font-weight: 800; color: #1E293B; margin-bottom: 6px;">
+                  Trust &amp; Automation Rating Scale (TAAS-4)
+                </h3>
+                <p>
+                  Controlled psychometric assessment calibrating cognitive calibration, institutional reliability, and algorithmic accountability for IRB study #2025-AI-084.
+                </p>
+
+                <div class="evaluated-response-snippet">
+                  <h6>Evaluated Task Response</h6>
+                  <div style="font-weight: 700; color: #1E293B; margin-bottom: 4px;" id="survey-task-badge">
+                    Course Drop &amp; Refund Advice (Case ACAD-01)
+                  </div>
+                  <p id="survey-evaluated-preview" style="font-style: italic;">
+                    "Yes, you can drop BIOL 204 without receiving a 'W' on your permanent academic transcript if you submit the drop request before Friday, October 24th..."
+                  </p>
+                </div>
+              </div>
+
+              <!-- Likert Scale Calibration Table -->
+              <div class="survey-protocol-card">
+                <h4 style="font-size: 0.88rem; margin-bottom: 6px;">Likert Scale Calibration</h4>
+                <p style="font-size: 0.75rem; color: #64748B;">Standard 5-Point Psychological Anchor</p>
+
+                <table class="likert-calibration-table">
+                  <tbody>
+                    <tr>
+                      <td class="likert-num-col">1</td>
+                      <td>Strongly Disagree</td>
+                      <td style="text-align: right; color: #94A3B8; font-family: var(--font-mono);">SD</td>
+                    </tr>
+                    <tr>
+                      <td class="likert-num-col">2</td>
+                      <td>Disagree</td>
+                      <td style="text-align: right; color: #94A3B8; font-family: var(--font-mono);">D</td>
+                    </tr>
+                    <tr>
+                      <td class="likert-num-col">3</td>
+                      <td>Neutral / Undecided</td>
+                      <td style="text-align: right; color: #94A3B8; font-family: var(--font-mono);">N</td>
+                    </tr>
+                    <tr>
+                      <td class="likert-num-col">4</td>
+                      <td>Agree</td>
+                      <td style="text-align: right; color: #94A3B8; font-family: var(--font-mono);">A</td>
+                    </tr>
+                    <tr>
+                      <td class="likert-num-col">5</td>
+                      <td>Strongly Agree</td>
+                      <td style="text-align: right; color: #94A3B8; font-family: var(--font-mono);">SA</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div style="margin-top: 12px; font-size: 0.7rem; color: #64748B; border-top: 1px solid #E2E8F0; padding-top: 8px;">
+                  ⚖️ Derived from the <em>Muir-Lee Trust in Automation Scale</em>. All scores normalized for subjective cognitive bias.
+                </div>
+              </div>
+
+              <!-- IRB Ethical Compliance Protocol -->
+              <div style="background-color: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px; padding: 14px; font-size: 0.74rem; color: #475569;">
+                <strong>🛡️ IRB Ethical Compliance Protocol:</strong> Your qualitative assessments do not impact academic status. Real-time telemetry records reaction time and modification patterns under anonymous hash <code>#72a-4082</code>.
+              </div>
+
+            </div>
+
+            <!-- Right Survey Form Card -->
+            <div class="survey-form-card">
+              <div class="survey-form-header">
+                <h3>Evaluation Instrument</h3>
+                <p>Rate each theoretical trust dimension based strictly on the response presented. Select the Likert magnitude from 1 (Strongly Disagree) to 5 (Strongly Agree).</p>
+              </div>
+
+              <form id="taas4-survey-form">
+                
+                <!-- Dimension 1: Accuracy -->
+                <div class="dimension-question-block">
+                  <div class="dimension-header-line">
+                    <span class="dimension-title">Dimension 1: Accuracy</span>
+                    <span class="dimension-step-tag">Q1 of 4 • Required</span>
+                  </div>
+                  <div class="dimension-prompt">
+                    "I am confident that the information provided by the AI is factually accurate according to university policy."
+                  </div>
+                  <div class="likert-options-row">
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q1" value="1" required>
+                      <span class="likert-score-digit">1</span>
+                      <span class="likert-sub-label">Strongly Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q1" value="2">
+                      <span class="likert-score-digit">2</span>
+                      <span class="likert-sub-label">Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q1" value="3">
+                      <span class="likert-score-digit">3</span>
+                      <span class="likert-sub-label">Neutral</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q1" value="4">
+                      <span class="likert-score-digit">4</span>
+                      <span class="likert-sub-label">Agree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q1" value="5">
+                      <span class="likert-score-digit">5</span>
+                      <span class="likert-sub-label">Strongly Agree</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Dimension 2: Epistemic Trust -->
+                <div class="dimension-question-block">
+                  <div class="dimension-header-line">
+                    <span class="dimension-title">Dimension 2: Epistemic Trust</span>
+                    <span class="dimension-step-tag">Q2 of 4 • Required</span>
+                  </div>
+                  <div class="dimension-prompt">
+                    "I would make an academic or financial decision based on this answer without asking a human academic advisor."
+                  </div>
+                  <div class="likert-options-row">
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q2" value="1" required>
+                      <span class="likert-score-digit">1</span>
+                      <span class="likert-sub-label">Strongly Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q2" value="2">
+                      <span class="likert-score-digit">2</span>
+                      <span class="likert-sub-label">Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q2" value="3">
+                      <span class="likert-score-digit">3</span>
+                      <span class="likert-sub-label">Neutral</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q2" value="4">
+                      <span class="likert-score-digit">4</span>
+                      <span class="likert-sub-label">Agree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q2" value="5">
+                      <span class="likert-score-digit">5</span>
+                      <span class="likert-sub-label">Strongly Agree</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Dimension 3: Source Provenance -->
+                <div class="dimension-question-block">
+                  <div class="dimension-header-line">
+                    <span class="dimension-title">Dimension 3: Source Provenance</span>
+                    <span class="dimension-step-tag">Q3 of 4 • Required</span>
+                  </div>
+                  <div class="dimension-prompt">
+                    "The response provided clear indications of where the academic rules and refund deadlines originated."
+                  </div>
+                  <div class="likert-options-row">
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q3" value="1" required>
+                      <span class="likert-score-digit">1</span>
+                      <span class="likert-sub-label">Strongly Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q3" value="2">
+                      <span class="likert-score-digit">2</span>
+                      <span class="likert-sub-label">Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q3" value="3">
+                      <span class="likert-score-digit">3</span>
+                      <span class="likert-sub-label">Neutral</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q3" value="4">
+                      <span class="likert-score-digit">4</span>
+                      <span class="likert-sub-label">Agree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q3" value="5">
+                      <span class="likert-score-digit">5</span>
+                      <span class="likert-sub-label">Strongly Agree</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Dimension 4: Tool Reliance -->
+                <div class="dimension-question-block">
+                  <div class="dimension-header-line">
+                    <span class="dimension-title">Dimension 4: Tool Reliance</span>
+                    <span class="dimension-step-tag">Q4 of 4 • Required</span>
+                  </div>
+                  <div class="dimension-prompt">
+                    "If this AI tool were available university-wide, I would rely on it for official academic planning."
+                  </div>
+                  <div class="likert-options-row">
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q4" value="1" required>
+                      <span class="likert-score-digit">1</span>
+                      <span class="likert-sub-label">Strongly Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q4" value="2">
+                      <span class="likert-score-digit">2</span>
+                      <span class="likert-sub-label">Disagree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q4" value="3">
+                      <span class="likert-score-digit">3</span>
+                      <span class="likert-sub-label">Neutral</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q4" value="4">
+                      <span class="likert-score-digit">4</span>
+                      <span class="likert-sub-label">Agree</span>
+                    </label>
+                    <label class="likert-btn-label">
+                      <input type="radio" name="q4" value="5">
+                      <span class="likert-score-digit">5</span>
+                      <span class="likert-sub-label">Strongly Agree</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Qualitative Rationale -->
+                <div class="qualitative-field-wrap">
+                  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                    <label for="qualitative-rationale-input">💬 Qualitative Rationale</label>
+                    <span id="qualitative-char-count" style="font-family: var(--font-mono); font-size: 0.72rem; color: #94A3B8;">0 / 800 chars</span>
+                  </div>
+                  <p style="font-size: 0.78rem; color: #64748B; margin-bottom: 8px;">
+                    What specific elements of the AI response increased or decreased your confidence in the answer?
+                  </p>
+                  <textarea 
+                    id="qualitative-rationale-input" 
+                    placeholder="e.g., The direct inclusion of specific university regulation codes (§4.12) and verifiable calendar dates increased my confidence, but I would prefer a direct bursar hyperlink to confirm refund tiers..."
+                    maxlength="800"
+                  ></textarea>
+
+                  <!-- Quick Clickable Rationale Prompt Tags -->
+                  <div class="tag-prompts-row">
+                    <span class="prompt-mini-tag">+ Specificity of dates and percentages</span>
+                    <span class="prompt-mini-tag">+ Presence of verifiable citation badges [1][2]</span>
+                    <span class="prompt-mini-tag">+ Clear step-by-step portal instructions</span>
+                    <span class="prompt-mini-tag">- Absence of direct bursar links</span>
+                    <span class="prompt-mini-tag">+ Lack of speculative language</span>
+                  </div>
+                </div>
+
+                <!-- Survey Submit Action Bar -->
+                <div class="survey-submit-bar">
+                  <div class="ferpa-compliance-note">
+                    <span>🔒</span>
+                    <span><strong>FERPA-Pseudonymized Submission:</strong> Responses are cryptographically decoupled from your university credentials prior to researcher repository ingest.</span>
+                  </div>
+
+                  <button type="submit" class="btn-maroon-primary" id="btn-submit-survey">
+                    <span>Submit Evaluation &amp; Continue to Task 2</span>
+                    <span>→</span>
+                  </button>
+                </div>
+
+              </form>
+            </div>
+
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- ==========================================================================
+           SCREEN 4: SOURCE DETAILS & EVIDENCE AUDIT MODAL
+           (Reference Page 5 & Page 10 Desktop)
+           ========================================================================== -->
+      <div id="source-evidence-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-doc-title">
+        <div class="modal-content-container">
+          
+          <!-- Modal Header -->
+          <div class="modal-header-bar">
+            <div class="modal-title-group">
+              <div class="modal-citation-icon" id="modal-citation-badge">[1]</div>
+              <div class="modal-title-text">
+                <h3 id="modal-doc-title">Source Verification &amp; Evidence Audit</h3>
+                <p id="modal-doc-authority">Office of the University Registrar • Matched to query on Census Date</p>
+              </div>
+            </div>
+
+            <div class="modal-header-actions">
+              <span class="pill-green" style="font-size: 0.72rem;">● Grounding Verified: 99.4%</span>
+              <button class="modal-close-btn" id="modal-close-btn" title="Close Modal">✕</button>
+            </div>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body">
+            
+            <!-- Metadata Dossier Grid -->
+            <div class="dossier-meta-grid">
+              <div class="meta-field-item">
+                <h6>Issuing Authority</h6>
+                <p id="modal-issuing-authority">Office of the Registrar (TUP Manila)</p>
+              </div>
+              <div class="meta-field-item">
+                <h6>Document Reference</h6>
+                <p id="modal-doc-reference">Academic Regs. 2024–2026 (REG-24-FALL-REV3)</p>
+              </div>
+              <div class="meta-field-item">
+                <h6>Canonical Repository URL</h6>
+                <p id="modal-canonical-url" style="color: #7B1113; font-family: var(--font-mono); font-size: 0.75rem;">
+                  https://tup.edu.ph/pages/students/tup-student-handbook
+                </p>
+              </div>
+              <div class="meta-field-item">
+                <h6>Integrity Signature (NIST)</h6>
+                <p class="meta-hash" id="modal-sha256">SHA-256: 8f4e9112bc091d2c091ad786523910ef</p>
+              </div>
+            </div>
+
+            <!-- Side-by-Side Claim vs Primary Corpus Comparison -->
+            <div class="evidence-comparison-grid">
+              
+              <!-- Left: AI Generated Claim -->
+              <div class="evidence-panel">
+                <div class="panel-header-strip panel-left-header">
+                  <span>🤖 AI Model Generated Claim</span>
+                  <span style="font-family: var(--font-mono); font-size: 0.7rem; color: #64748B;">Direct Entailment: 98.8%</span>
+                </div>
+                <div class="panel-body-text" id="modal-generated-claim-text">
+                  <!-- Injected by app.js -->
+                </div>
+                <div style="background-color: #F8FAFC; border-top: 1px solid #E2E8F0; padding: 10px 14px; font-size: 0.74rem; color: #64748B;">
+                  Entity Extraction: <strong>Fall 2024 Census</strong> | Zero "W" Mark on Transcript | Lexical Risk: &lt;0.01%
+                </div>
+              </div>
+
+              <!-- Right: Primary Canonical Corpus Text -->
+              <div class="evidence-panel">
+                <div class="panel-header-strip panel-right-header">
+                  <span>📜 Primary Canonical Corpus Text</span>
+                  <span style="font-family: var(--font-mono); font-size: 0.7rem; color: #B45309;">Page 18 • §4.2.1</span>
+                </div>
+                <div class="panel-body-text" id="modal-primary-corpus-text" style="font-family: var(--font-mono); font-size: 0.8rem; background-color: #FEFDF9;">
+                  <!-- Injected by app.js -->
+                </div>
+                <div style="background-color: #FEF3C7; border-top: 1px solid #FDE68A; padding: 10px 14px; font-size: 0.74rem; color: #92400E;">
+                  Primary Storage: AWS S3 GovCloud / Cryptographic Merkle Root Verified
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Grounding Metrics & Applicability -->
+            <div class="grounding-metrics-row">
+              <div class="grounding-box">
+                <h6>Claim Confidence</h6>
+                <div class="metric-num" id="modal-claim-confidence">99.4%</div>
+                <div style="font-size: 0.7rem; color: #64748B;">Zero conflicting clauses detected</div>
+              </div>
+              <div class="grounding-box">
+                <h6>Corpus Authenticity Index</h6>
+                <div class="metric-num">100.0%</div>
+                <div style="font-size: 0.7rem; color: #64748B;">Registrar Canonical OCR Stream</div>
+              </div>
+              <div class="grounding-box">
+                <h6>Target Applicability</h6>
+                <div style="font-weight: 700; color: #1E293B; font-size: 0.9rem; margin-top: 4px;" id="modal-applicability">
+                  Letters &amp; Sciences / Engineering
+                </div>
+                <div style="font-size: 0.7rem; color: #64748B;">Valid for enrolled undergraduate courses</div>
+              </div>
+            </div>
+
+            <!-- IRB Human Oversight Survey -->
+            <div class="oversight-survey-box">
+              <h5>IRB Human Oversight Survey</h5>
+              <p>As a credentialed participant in Study #2025-AI-084, please confirm or challenge this grounding attribution:</p>
+              <div class="oversight-options-list">
+                <label class="oversight-radio-label">
+                  <input type="radio" name="oversight" checked>
+                  <span>Accurate, direct factual citation</span>
+                </label>
+                <label class="oversight-radio-label">
+                  <input type="radio" name="oversight">
+                  <span>Partial match / missing policy nuances</span>
+                </label>
+                <label class="oversight-radio-label">
+                  <input type="radio" name="oversight">
+                  <span>Incorrect or misattributed excerpt</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
+            <button class="btn-secondary" id="modal-back-btn">
+              ← Return to Chat
+            </button>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-secondary" onclick="window.print()">
+                🖨️ Print Audit Dossier
+              </button>
+              <button class="btn-maroon-primary" id="modal-open-original-btn">
+                <span>Open Original Institutional Document</span>
+                <span>↗</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TOAST NOTIFICATION -->
+      <div id="toast-notification" class="toast-notification" role="status" aria-live="polite">
+        <span style="color: #10B981;">✓</span>
+        <span id="toast-text">Action completed successfully.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="knowledge-base.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
